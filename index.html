@@ -3,112 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Librería Genesis - San Lorenzo</title>
+<meta name="color-scheme" content="light">
+<title>Librería Comercial | Libros, Útiles y Papelería</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box;font-family:Arial,sans-serif}
-body{margin:0;background:#fff7ed}
-header{background:#ea580c;color:white;padding:16px;text-align:center}
-header h1{margin:0;font-size:22px}
-header p{margin:4px 0 0;opacity:.9;font-size:13px}
-.container{max-width:900px;margin:0 auto;padding:14px}
-.card{background:white;border-radius:14px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.08);margin-bottom:14px}
-h2{margin:0 0 12px;font-size:18px}
-input,select{width:100%;padding:11px;border:1px solid #ddd;border-radius:10px;margin-bottom:10px;font-size:15px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-button{width:100%;padding:12px;border:0;border-radius:10px;background:#ea580c;color:white;font-weight:bold;font-size:15px;cursor:pointer}
-button.sec{background:#111}
-.prod{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #eee;padding:10px 0}
-.prod b{font-size:15px}
-.prod span{color:#666;font-size:13px}
-.price{color:#ea580c;font-weight:bold}
-.actions{display:flex;gap:6px}
-.actions button{width:auto;padding:7px 10px;font-size:12px}
-.del{background:#dc2626}
-#estado{text-align:center;font-size:13px;color:#666;margin:8px 0}
-</style>
-</head>
-<body>
-<header><h1>📚 Librería Genesis</h1><p>San Lorenzo • Stock en vivo</p></header>
-<div class="container">
-<div id="estado">Cargando productos...</div>
-<div class="card">
-<h2>➕ Agregar / Editar producto</h2>
-<input id="nombre" placeholder="Nombre ej: Cuaderno 100 hojas">
-<div class="row">
-<select id="categoria"><option value="Cuadernos">Cuadernos</option><option value="Utiles">Útiles</option><option value="Libros">Libros</option><option value="Mochilas">Mochilas</option><option value="Papelería">Papelería</option><option value="Otros">Otros</option></select>
-<input id="marca" placeholder="Marca ej: Norma">
-</div>
-<div class="row">
-<input id="precio" type="number" placeholder="Precio Gs. ej: 15000">
-<input id="stock" type="number" placeholder="Stock ej: 20">
-</div>
-<button onclick="guardar()">💾 Guardar producto</button>
-<button class="sec" style="margin-top:8px" onclick="limpiar()">Limpiar formulario</button>
-</div>
-<div class="card">
-<h2>🔍 Buscar</h2>
-<input id="buscador" placeholder="Buscar por nombre..." oninput="cargar()">
-</div>
-<div class="card"><h2>📦 Tus productos</h2><div id="lista"></div></div>
-</div>
-<script>
-const SUPABASE_URL = "https://ueflgspcvtpjxxbvpgut.supabase.co";
-const SUPABASE_KEY = "sb_publishable_XBeI2DDlj6ar13TBgWktvw_ds3x0NWz";
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let editId = null;
-
-async function cargar(){
-  const q = document.getElementById('buscador').value.toLowerCase();
-  const {data, error} = await supabaseClient.from('productos').select('*').order('creado_en',{ascending:false});
-  if(error){ document.getElementById('estado').innerText = "Error: "+error.message; return; }
-  document.getElementById('estado').innerText = data.length + " productos guardados ✅ Se guarda en Supabase";
-  const filtrados = data.filter(p => p.nombre.toLowerCase().includes(q));
-  document.getElementById('lista').innerHTML = filtrados.length ? filtrados.map(p=>`
-    <div class="prod">
-      <div><b>${p.nombre}</b><br><span>${p.categoria} • ${p.marca||''} • Stock: ${p.stock}</span></div>
-      <div style="text-align:right"><div class="price">Gs. ${Number(p.precio).toLocaleString('es-PY')}</div>
-      <div class="actions"><button onclick="editar(${p.id},'${p.nombre.replace(/'/g,"")}','${p.categoria}','${p.marca||''}',${p.precio},${p.stock})">Editar</button>
-      <button class="del" onclick="borrar(${p.id})">Borrar</button></div></div>
-    </div>`).join('') : "<p>No hay productos todavía. Agregá el primero arriba.</p>";
-}
-async function guardar(){
-  const nombre=document.getElementById('nombre').value.trim();
-  const categoria=document.getElementById('categoria').value;
-  const marca=document.getElementById('marca').value.trim();
-  const precio=Number(document.getElementById('precio').value);
-  const stock=Number(document.getElementById('stock').value||0);
-  if(!nombre||!precio){alert("Poné nombre y precio");return;}
-  if(editId){
-    const {error}=await supabaseClient.from('productos').update({nombre,categoria,marca,precio,stock}).eq('id',editId);
-    if(error) return alert(error.message);
-    alert("Actualizado ✅");
-  } else {
-    const {error}=await supabaseClient.from('productos').insert([{nombre,categoria,marca,precio,stock}]);
-    if(error) return alert(error.message);
-    alert("Guardado ✅ Ya quedó en tu base de datos");
-  }
-  limpiar(); cargar();
-}
-function editar(id,nombre,categoria,marca,precio,stock){
-  editId=id;
-  document.getElementById('nombre').value=nombre;
-  document.getElementById('categoria').value=categoria;
-  document.getElementById('marca').value=marca;
-  document.getElementById('precio').value=precio;
-  document.getElementById('stock').value=stock;
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-async function borrar(id){
-  if(!confirm("¿Borrar este producto?")) return;
-  await supabaseClient.from('productos').delete().eq('id',id);
-  cargar();
-}
-function limpiar(){
-  editId=null;
-  ['nombre','marca','precio','stock'].forEach(i=>document.getElementById(i).value='');
-}
-cargar();
-</script>
-</body>
-</html>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{color-scheme:light;background:#F5F0E6}
+  body{font-family:Georgia,'Times New Roman',serif;background:#F5F0E6 !important;color:#1A1A1A !important}
+  header{background:#0F2A3C !important;color:white;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:20}
+  header b{font-size:22px;color:white !important}
+  header b span{color:#C9A86A !important}
+  nav{display:flex;align-items:center;gap:16px}
+  nav a{color:white !important;text-decoration:none;font-size:14px;font-family:Arial,sans-serif}
+  .cart-btn{background:#C9A86A !important;color:#0F2A3C !important;padding:9px 14px;border-radius:6px;font-weight:bold;border:none;cursor:pointer;font-family:Arial,sans-serif;font-size:14px}
+  .cart-count{background:#fff;color:#0F2A3C;border-radius:50%;padding:2px 7px;margin-left:6px;font-size:12px}
+  .hero{background:#0F2A3C !important;color:white !important;padding:60px 20px;text-align:center}
+  .hero p{color:#C9A86A !important;letter-spacing:3px;font-size:12px;font-family:Arial,sans-serif;margin-bottom:12px}
+  .hero h1{font-size:42px;line-height:1.1;max-width:700px;margin:0 auto 14px;color:white !important}
+  .hero h2{font-family:Arial,sans-serif;font-size:16px;color:#E8DDC8 !important;max-width:600px;margin:0 auto 24px;line-height:1.5;font-weight:normal}
+  .hero a{display:inline-block;background:#C9A86A !important;color:#0F2A3C !important;padding:13px 26px;text-decoration:none;font-family:Arial,sans-serif;font-weight:bold;border-radius:4px}
+  .hero a.outline{background:transparent !important;color:white !important;border:1px solid white;margin-left:10px}
+  .bar{background:#C9A86A !important;color:#0F2A3C !important;text-align:center;padding:10px;font-family:Arial,sans-serif;font-size:13px;font-weight:bold}
+  .section{max-width:1100px;margin:0 auto;padding:40px 20px;background:#

@@ -1,129 +1,60 @@
-<div class="section" id="admin" style="padding-top:0">
-<h3>🔐 Panel para vos - Agregar productos</h3>
-<p class="sub">Lo que guardás acá aparece arriba en la tienda y se guarda en Supabase.</p>
-<div class="admin-box">
-<input id="nombre" placeholder="Nombre ej: Cuaderno 100 hojas">
-<div class="admin-row">
-<select id="categoria"><option value="Cuadernos">Cuadernos</option><option value="Libros">Libros</option><option value="Utiles">Útiles</option><option value="Mochilas">Mochilas</option><option value="Papelería">Papelería</option><option value="Oficina">Oficina</option><option value="Otros">Otros</option></select>
-<input id="marca" placeholder="Marca ej: Norma">
-</div>
-<div class="admin-row">
-<input id="precio" type="number" placeholder="Precio Gs. ej: 15000">
-<input id="stock" type="number" placeholder="Stock ej: 20">
-</div>
-<input id="foto" placeholder="Link de foto (opcional)">
-<button onclick="guardar()">💾 Guardar producto</button>
-<button onclick="limpiar()" style="background:#fff!important;color:#0F2A3C!important;margin-top:8px">Limpiar formulario</button>
-<div id="listaAdmin" style="margin-top:16px"></div>
-</div>
-</div>
-<footer>© 2026 Librería Comercial - Asunción, Paraguay. Todos los derechos reservados.</footer>
-<div class="overlay" id="overlay" onclick="toggleCart(false)"></div>
-<div class="drawer" id="drawer">
-<div class="drawer-head"><b>Tu Pedido 🛒</b><button onclick="toggleCart(false)">X</button></div>
-<div class="drawer-body" id="cartItems"></div>
-<div class="drawer-foot" id="cartFoot" style="display:none">
-<input class="name-input" id="clientName" placeholder="Tu nombre (ej: María Pérez)">
-<input class="name-input" id="clientAddress" placeholder="Tu barrio / dirección (opcional)">
-<div class="total"><span>Total:</span><span id="cartTotal">Gs. 0</span></div>
-<a class="wa-btn" id="waLink" href="#" target="_blank">Enviar pedido por WhatsApp 📲</a>
-<button class="clear-btn" onclick="clearCart()">Vaciar pedido</button>
-</div>
-</div>
-<script>
-const WHATSAPP="595986944738";
-const SUPABASE_URL="https://ueflgspcvtpjxxbvpgut.supabase.co";
-const SUPABASE_KEY="sb_publishable_XBeI2DDlj6ar13TBgWktvw_ds3x0NWz";
-const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let products=[]; let cart=JSON.parse(localStorage.getItem('libreria_cart')||'[]'); let editId=null;
-function fmt(n){return "Gs. "+Number(n).toLocaleString('es-PY');}
-function fotoDe(p){if(p.foto) return p.foto; return "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600";}
-async function cargar(){
-const {data,error}=await supabaseClient.from('productos').select('*').order('creado_en',{ascending:false});
-if(error){document.getElementById('estado').innerText="Error: "+error.message; return;}
-products=data||[];
-document.getElementById('estado').innerText=products.length?products.length+" productos en tu tienda ✅":"Todavía no tenés productos. Agregá el primero abajo en el Panel.";
-renderProducts(); renderAdmin();
-}
-function renderProducts(){
-const q=(document.getElementById('buscador').value||'').toLowerCase();
-const list=products.filter(p=>p.nombre.toLowerCase().includes(q));
-if(!list.length){document.getElementById('products').innerHTML="<p style='font-family:Arial;color:#B8C2C9'>No hay productos todavía. Agregá uno abajo en el Panel.</p>";return;}
-document.getElementById('products').innerHTML=list.map(p=>`<div class="card"><img src="${fotoDe(p)}" onerror="this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600'"><div class="card-body"><small>${(p.categoria||'').toUpperCase()} ${p.marca?'• '+p.marca:''}</small><h4>${p.nombre}</h4><p>Stock: ${p.stock} unidades</p><div class="price">${fmt(p.precio)}</div><button class="add" onclick="addToCart(${p.id})">Agregar al Pedido</button></div></div>`).join('');
-}
-function renderAdmin(){
-document.getElementById('listaAdmin').innerHTML=products.length?"<h4 style='margin-bottom:8px;color:#fff'>Tus productos guardados:</h4>"+products.map(p=>`<div class="admin-prod"><span><b>${p.nombre}</b> - ${fmt(p.precio)} - Stock ${p.stock}</span><span><button class="edit" onclick="editar(${p.id},'${p.nombre.replace(/'/g,"")}','${p.categoria}','${p.marca||''}',${p.precio},${p.stock})">Editar</button><button class="del" onclick="borrar(${p.id})">Borrar</button></span></div>`).join(''):"";
-}
-async function guardar(){
-const nombre=document.getElementById('nombre').value.trim();
-const categoria=document.getElementById('categoria').value;
-const marca=document.getElementById('marca').value.trim();
-const precio=Number(document.getElementById('precio').value);
-const stock=Number(document.getElementById('stock').value||0);
-if(!nombre||!precio){alert("Poné nombre y precio");return;}
-if(editId){
-const {error}=await supabaseClient.from('productos').update({nombre,categoria,marca,precio,stock}).eq('id',editId);
-if(error) return alert(error.message);
-alert("Actualizado ✅");
-}else{
-const {error}=await supabaseClient.from('productos').insert([{nombre,categoria,marca,precio,stock}]);
-if(error) return alert(error.message);
-alert("Guardado ✅ Ya aparece en tu tienda");
-}
-limpiar(); cargar();
-}
-function editar(id,nombre,categoria,marca,precio,stock){
-editId=id;
-document.getElementById('nombre').value=nombre;
-document.getElementById('categoria').value=categoria;
-document.getElementById('marca').value=marca;
-document.getElementById('precio').value=precio;
-document.getElementById('stock').value=stock;
-document.getElementById('admin').scrollIntoView({behavior:'smooth'});
-}
-async function borrar(id){
-if(!confirm("¿Borrar este producto?")) return;
-await supabaseClient.from('productos').delete().eq('id',id);
-cargar();
-}
-function limpiar(){editId=null;['nombre','marca','precio','stock','foto'].forEach(i=>document.getElementById(i).value='');}
-function save(){localStorage.setItem('libreria_cart',JSON.stringify(cart));}
-function addToCart(id){
-let f=cart.find(i=>i.id===id);
-if(f) f.qty++; else{let p=products.find(x=>x.id===id); cart.push({id:p.id,name:p.nombre,price:p.precio,img:fotoDe(p),qty:1});}
-save(); renderCart(); toggleCart(true);
-}
-function changeQty(id,d){
-let f=cart.find(i=>i.id===id); if(!f) return;
-f.qty+=d; if(f.qty<=0) cart=cart.filter(i=>i.id!==id);
-save(); renderCart();
-}
-function removeItem(id){cart=cart.filter(i=>i.id!==id); save(); renderCart();}
-function clearCart(){cart=[]; save(); renderCart();}
-function toggleCart(open){
-document.getElementById('drawer').classList.toggle('open',open);
-document.getElementById('overlay').classList.toggle('show',open);
-if(open) renderCart();
-}
-function renderCart(){
-let total=cart.reduce((s,i)=>s+i.price*i.qty,0);
-let count=cart.reduce((s,i)=>s+i.qty,0);
-document.getElementById('cartCount').textContent=count;
-document.getElementById('cartTotal').textContent=fmt(total);
-let box=document.getElementById('cartItems');
-document.getElementById('cartFoot').style.display=cart.length?'block':'none';
-if(!cart.length){box.innerHTML=`<div class="empty">Tu pedido está vacío.<br>Agregá algún libro o útil y aparece acá.</div>`; return;}
-box.innerHTML=cart.map(i=>`<div class="item"><img src="${i.img}"><div class="item-info"><b>${i.name}</b><p>${fmt(i.price)} c/u</p><div class="qty"><button onclick="changeQty(${i.id},-1)">-</button><span>${i.qty}</span><button onclick="changeQty(${i.id},1)">+</button> <span style="margin-left:8px;font-weight:bold">${fmt(i.price*i.qty)}</span></div></div><button class="remove" onclick="removeItem(${i.id})">Borrar</button></div>`).join('');
-let nombre=document.getElementById('clientName').value||'';
-let dir=document.getElementById('clientAddress').value||'';
-let msg=`Hola Librería Comercial! Quiero hacer un pedido:%0A%0A`;
-cart.forEach(i=>{msg+=`• ${i.qty}x ${i.name} - ${fmt(i.price*i.qty)}%0A`;});
-msg+=`%0ATotal: ${fmt(total)}%0A`;
-if(nombre) msg+=`Nombre: ${encodeURIComponent(nombre)}%0A`;
-if(dir) msg+=`Entrega: ${encodeURIComponent(dir)}%0A`;
-document.getElementById('waLink').href=`https://wa.me/${WHATSAPP}?text=${msg}`;
-}
-document.getElementById('clientName').addEventListener('input',renderCart);
-document.getElementById('clientAddress').addEventListener('input',renderCart);
-cargar(); renderCart();
-</script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light only">
+<title>Librería Comercial | Asunción</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:#0F2A3C}
+body{font-family:Georgia,serif;background:#0F2A3C;color:#fff}
+header{background:#0F2A3C;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50;border-bottom:1px solid #1E3A4F}
+.logo{font-size:21px;font-weight:bold;letter-spacing:.5px;line-height:1}
+.logo span{color:#C9A86A}
+nav{display:flex;align-items:center;gap:16px;font-family:Arial,sans-serif}
+nav a{color:#E8DDC8;text-decoration:none;font-size:13px}
+.nav-gold{background:#C9A86A;color:#0F2A3C;padding:8px 14px;border-radius:6px;font-weight:bold;font-size:13px;text-decoration:none;font-family:Arial}
+.cart-btn{background:#C9A86A;color:#0F2A3C;padding:9px 14px;border-radius:6px;font-weight:bold;border:none;cursor:pointer;font-family:Arial;font-size:13px}
+.hero{padding:50px 20px 40px;text-align:center;background:#0F2A3C}
+.hero small{color:#C9A86A;letter-spacing:3px;font-size:11px;font-family:Arial;font-weight:bold}
+.hero h1{font-size:38px;line-height:1.15;max-width:700px;margin:14px auto 12px}
+.hero p{font-family:Arial;font-size:14px;color:#CFCFCF;max-width:560px;margin:0 auto 22px;line-height:1.6}
+.btn-gold{display:inline-block;background:#C9A86A;color:#0F2A3C;padding:12px 24px;border-radius:6px;text-decoration:none;font-family:Arial;font-weight:bold;font-size:14px}
+.btn-line{display:inline-block;background:transparent;color:#fff;padding:12px 24px;border:1px solid #fff;border-radius:6px;text-decoration:none;font-family:Arial;font-size:14px;margin-left:10px}
+.bar{background:#C9A86A;color:#0F2A3C;text-align:center;padding:10px;font-family:Arial;font-size:12px;font-weight:bold}
+.section{max-width:1100px;margin:0 auto;padding:36px 20px}
+.section h3{font-size:28px}
+.section p.sub{font-family:Arial;color:#B8C2C9;margin:8px 0 20px;font-size:14px}
+.search{width:100%;padding:12px;border:1px solid #2A4256;border-radius:8px;background:#132F46;color:#fff;margin-bottom:20px;font-size:14px;font-family:Arial}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.card{background:#162E42;border:1px solid #2A4256;border-radius:10px;overflow:hidden}
+.card img{width:100%;height:190px;object-fit:cover;display:block;background:#222}
+.card-body{padding:18px}
+.card small{font-family:Arial;color:#C9A86A;font-weight:bold;font-size:11px;letter-spacing:1px}
+.card h4{font-size:19px;margin:7px 0 6px;line-height:1.3}
+.card p{font-family:Arial;font-size:13px;color:#B8C2C9;line-height:1.5;min-height:38px}
+.price{font-family:Arial;font-weight:bold;margin-top:10px;font-size:16px}
+.price s{color:#7A8A95;font-size:13px;font-weight:normal;margin-left:6px}
+.card button.add{width:100%;margin-top:14px;background:#1E4A68;color:#fff;border:none;padding:12px;border-radius:6px;font-weight:bold;cursor:pointer;font-family:Arial}
+.why-card{background:#162E42;border:1px solid #2A4256;border-radius:10px;padding:20px}
+.why-card h4{margin:8px 0 6px}
+.why-card p{font-family:Arial;font-size:13px;color:#B8C2C9;line-height:1.5}
+.info{background:#162E42;border:1px solid #2A4256;border-radius:12px;padding:28px;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.info h3{color:#C9A86A;font-size:22px}
+.info p,.info ul{font-family:Arial;font-size:14px;line-height:1.6;color:#D0D8DD;margin-top:10px;list-style:none}
+.wa-box{margin-top:16px;background:#C9A86A;color:#0F2A3C;padding:13px;border-radius:8px;text-align:center;font-weight:bold;font-family:Arial}
+footer{background:#0A1E2B;color:#8A9AA5;text-align:center;padding:20px;font-family:Arial;font-size:12px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:60}
+.overlay.show{display:block}
+.drawer{position:fixed;top:0;right:0;width:100%;max-width:380px;height:100%;background:#fff;z-index:61;transform:translateX(100%);transition:.3s;display:flex;flex-direction:column;font-family:Arial;color:#1A1A1A}
+.drawer.open{transform:translateX(0)}
+.drawer-head{padding:18px;background:#0F2A3C;color:white;display:flex;justify-content:space-between;align-items:center}
+.drawer-head button{background:white;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-weight:bold}
+.drawer-body{flex:1;overflow:auto;padding:16px}
+.item{display:flex;gap:10px;border-bottom:1px solid #eee;padding:12px 0;align-items:center}
+.item img{width:60px;height:60px;object-fit:cover;border-radius:6px}
+.item-info{flex:1}
+.qty{display:flex;align-items:center;gap:8px;margin-top:6px}
+.qty button{width:26px;height:26px;border:1px solid #ddd;background:#f5f5f5;border-radius:4px;cursor

@@ -1,4 +1,4 @@
-<div class="section" id="admin">
+<div class="section" id="admin" style="padding-top:0">
 <h3>🔐 Panel para vos - Agregar productos</h3>
 <p class="sub">Lo que guardás acá aparece arriba en la tienda y se guarda en Supabase.</p>
 <div class="admin-box">
@@ -13,11 +13,11 @@
 </div>
 <input id="foto" placeholder="Link de foto (opcional)">
 <button onclick="guardar()">💾 Guardar producto</button>
-<button onclick="limpiar()" style="background:#111;margin-top:8px">Limpiar formulario</button>
+<button onclick="limpiar()" style="background:#fff!important;color:#0F2A3C!important;margin-top:8px">Limpiar formulario</button>
 <div id="listaAdmin" style="margin-top:16px"></div>
 </div>
 </div>
-<footer>© 2026 Librería Comercial - Asunción, Paraguay.</footer>
+<footer>© 2026 Librería Comercial - Asunción, Paraguay. Todos los derechos reservados.</footer>
 <div class="overlay" id="overlay" onclick="toggleCart(false)"></div>
 <div class="drawer" id="drawer">
 <div class="drawer-head"><b>Tu Pedido 🛒</b><button onclick="toggleCart(false)">X</button></div>
@@ -48,11 +48,11 @@ renderProducts(); renderAdmin();
 function renderProducts(){
 const q=(document.getElementById('buscador').value||'').toLowerCase();
 const list=products.filter(p=>p.nombre.toLowerCase().includes(q));
-if(!list.length){document.getElementById('products').innerHTML="<p style='font-family:Arial;color:#888'>No hay productos todavía. Agregá uno abajo en el Panel.</p>";return;}
-document.getElementById('products').innerHTML=list.map(p=>`<div class="card"><img src="${fotoDe(p)}" onerror="this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600'"><div><small>${(p.categoria||'').toUpperCase()} ${p.marca?'• '+p.marca:''}</small><h4>${p.nombre}</h4><p>Stock: ${p.stock} unidades</p><div class="price">${fmt(p.precio)}</div><button class="add" onclick="addToCart(${p.id})">Agregar al Pedido</button></div></div>`).join('');
+if(!list.length){document.getElementById('products').innerHTML="<p style='font-family:Arial;color:#B8C2C9'>No hay productos todavía. Agregá uno abajo en el Panel.</p>";return;}
+document.getElementById('products').innerHTML=list.map(p=>`<div class="card"><img src="${fotoDe(p)}" onerror="this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600'"><div class="card-body"><small>${(p.categoria||'').toUpperCase()} ${p.marca?'• '+p.marca:''}</small><h4>${p.nombre}</h4><p>Stock: ${p.stock} unidades</p><div class="price">${fmt(p.precio)}</div><button class="add" onclick="addToCart(${p.id})">Agregar al Pedido</button></div></div>`).join('');
 }
 function renderAdmin(){
-document.getElementById('listaAdmin').innerHTML=products.length?"<h4 style='margin-bottom:8px'>Tus productos guardados:</h4>"+products.map(p=>`<div class="admin-prod"><span><b>${p.nombre}</b> - ${fmt(p.precio)} - Stock ${p.stock}</span><span><button class="edit" onclick="editar(${p.id},'${p.nombre.replace(/'/g,"")}','${p.categoria}','${p.marca||''}',${p.precio},${p.stock})">Editar</button><button class="del" onclick="borrar(${p.id})">Borrar</button></span></div>`).join(''):"";
+document.getElementById('listaAdmin').innerHTML=products.length?"<h4 style='margin-bottom:8px;color:#fff'>Tus productos guardados:</h4>"+products.map(p=>`<div class="admin-prod"><span><b>${p.nombre}</b> - ${fmt(p.precio)} - Stock ${p.stock}</span><span><button class="edit" onclick="editar(${p.id},'${p.nombre.replace(/'/g,"")}','${p.categoria}','${p.marca||''}',${p.precio},${p.stock})">Editar</button><button class="del" onclick="borrar(${p.id})">Borrar</button></span></div>`).join(''):"";
 }
 async function guardar(){
 const nombre=document.getElementById('nombre').value.trim();
@@ -118,4 +118,12 @@ let nombre=document.getElementById('clientName').value||'';
 let dir=document.getElementById('clientAddress').value||'';
 let msg=`Hola Librería Comercial! Quiero hacer un pedido:%0A%0A`;
 cart.forEach(i=>{msg+=`• ${i.qty}x ${i.name} - ${fmt(i.price*i.qty)}%0A`;});
-msg+=`%0ATotal
+msg+=`%0ATotal: ${fmt(total)}%0A`;
+if(nombre) msg+=`Nombre: ${encodeURIComponent(nombre)}%0A`;
+if(dir) msg+=`Entrega: ${encodeURIComponent(dir)}%0A`;
+document.getElementById('waLink').href=`https://wa.me/${WHATSAPP}?text=${msg}`;
+}
+document.getElementById('clientName').addEventListener('input',renderCart);
+document.getElementById('clientAddress').addEventListener('input',renderCart);
+cargar(); renderCart();
+</script>

@@ -3,40 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
 <title>Librería Comercial | Libros, Útiles y Papelería</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:Georgia, 'Times New Roman', serif;background:#F5F0E6;color:#1A1A1A}
-  header{background:#0F2A3C;color:white;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
-  header b{font-size:22px;letter-spacing:1px}
-  header b span{color:#C9A86A}
-  nav a{color:white;text-decoration:none;margin-left:18px;font-size:14px;font-family:Arial,sans-serif}
-  nav a.btn{background:#C9A86A;color:#0F2A3C;padding:8px 14px;border-radius:4px;font-weight:bold}
-  .hero{background:#0F2A3C;color:white;padding:60px 20px;text-align:center}
-  .hero p{color:#C9A86A;letter-spacing:3px;font-size:12px;font-family:Arial,sans-serif;margin-bottom:12px}
-  .hero h1{font-size:42px;line-height:1.1;max-width:700px;margin:0 auto 14px}
-  .hero h2{font-weight:normal;font-family:Arial,sans-serif;font-size:16px;color:#E8DDC8;max-width:600px;margin:0 auto 24px;line-height:1.5}
-  .hero a{display:inline-block;background:#C9A86A;color:#0F2A3C;padding:13px 26px;text-decoration:none;font-family:Arial,sans-serif;font-weight:bold;border-radius:4px}
-  .hero a.outline{background:transparent;color:white;border:1px solid white;margin-left:10px}
-  .bar{background:#C9A86A;color:#0F2A3C;text-align:center;padding:10px;font-family:Arial,sans-serif;font-size:13px;font-weight:bold;letter-spacing:0.5px}
-  .section{max-width:1100px;margin:0 auto;padding:40px 20px}
-  .section h3{font-size:28px;margin-bottom:6px}
-  .section p.sub{font-family:Arial,sans-serif;color:#666;margin-bottom:24px}
+  html{color-scheme:light;background:#F5F0E6}
+  body{font-family:Georgia,'Times New Roman',serif;background:#F5F0E6 !important;color:#1A1A1A !important}
+  header{background:#0F2A3C !important;color:white;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:20}
+  header b{font-size:22px;color:white !important}
+  header b span{color:#C9A86A !important}
+  nav{display:flex;align-items:center;gap:16px}
+  nav a{color:white !important;text-decoration:none;font-size:14px;font-family:Arial,sans-serif}
+  .cart-btn{background:#C9A86A !important;color:#0F2A3C !important;padding:9px 14px;border-radius:6px;font-weight:bold;border:none;cursor:pointer;font-family:Arial,sans-serif;font-size:14px}
+  .cart-count{background:#fff;color:#0F2A3C;border-radius:50%;padding:2px 7px;margin-left:6px;font-size:12px}
+  .hero{background:#0F2A3C !important;color:white !important;padding:60px 20px;text-align:center}
+  .hero p{color:#C9A86A !important;letter-spacing:3px;font-size:12px;font-family:Arial,sans-serif;margin-bottom:12px}
+  .hero h1{font-size:42px;line-height:1.1;max-width:700px;margin:0 auto 14px;color:white !important}
+  .hero h2{font-family:Arial,sans-serif;font-size:16px;color:#E8DDC8 !important;max-width:600px;margin:0 auto 24px;line-height:1.5;font-weight:normal}
+  .hero a{display:inline-block;background:#C9A86A !important;color:#0F2A3C !important;padding:13px 26px;text-decoration:none;font-family:Arial,sans-serif;font-weight:bold;border-radius:4px}
+  .hero a.outline{background:transparent !important;color:white !important;border:1px solid white;margin-left:10px}
+  .bar{background:#C9A86A !important;color:#0F2A3C !important;text-align:center;padding:10px;font-family:Arial,sans-serif;font-size:13px;font-weight:bold}
+  .section{max-width:1100px;margin:0 auto;padding:40px 20px;background:#F5F0E6 !important}
+  .section h3{font-size:28px;margin-bottom:6px;color:#1A1A1A !important}
+  .section p.sub{font-family:Arial,sans-serif;color:#666 !important;margin-bottom:24px}
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
-  .card{background:white;border:1px solid #E5DDC8;border-radius:8px;overflow:hidden}
-  .card img{width:100%;height:180px;object-fit:cover}
-  .card div{padding:16px}
-  .card small{font-family:Arial,sans-serif;color:#C9A86A;font-weight:bold;font-size:11px;letter-spacing:1px}
-  .card h4{font-size:18px;margin:6px 0}
-  .card p{font-family:Arial,sans-serif;font-size:13px;color:#666;line-height:1.5}
-  .price{font-family:Arial,sans-serif;font-weight:bold;margin-top:12px;font-size:16px}
-  .price span{color:#888;font-weight:normal;text-decoration:line-through;font-size:13px;margin-left:6px}
-  .card button{width:100%;margin-top:12px;background:#0F2A3C;color:white;border:none;padding:11px;border-radius:4px;font-weight:bold;cursor:pointer}
-  .info{background:#0F2A3C;color:white;border-radius:10px;padding:30px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
-  .info h3{color:#C9A86A}
-  .info p{font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#E8DDC8;margin-top:10px}
-  .info ul{font-family:Arial,sans-serif;font-size:14px;line-height:1.8;margin-top:10px;list-style:none}
-  footer{background:#0A1E2B;color:#AAA;text-align:center;padding:20px;font-family:Arial,sans-serif;font-size:12px}
+  .card{background:white !important;border:1px solid #E5DDC8;border-radius:8px;overflow:hidden}
+  .card img{width:100%;height:180px;object-fit:cover;display:block}
+  .card div{padding:16px;background:white !important}
+  .card small{font-family:Arial,sans-serif;color:#C9A86A !important;font-weight:bold;font-size:11px;letter-spacing:1px}
+  .card h4{font-size:18px;margin:6px 0;color:#1A1A1A !important}
+  .card p{font-family:Arial,sans-serif;font-size:13px;color:#666 !important;line-height:1.5}
+  .price{font-family:Arial,sans-serif;font-weight:bold;margin-top:12px;font-size:16px;color:#1A1A1A !important}
+  .price span{color:#888 !important;font-weight:normal;text-decoration:line-through;font-size:13px;margin-left:6px}
+  .card button.add{width:100%;margin-top:12px;background:#0F2A3C !important;color:white !important;border:none;padding:11px;border-radius:4px;font-weight:bold;cursor:pointer}
+  .info{background:#0F2A3C !important;color:white !important;border-radius:10px;padding:30px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .info h3{color:#C9A86A !important}
+  .info p,.info ul{font-family:Arial,sans-serif;font-size:14px;line-height:1.6;color:#E8DDC8 !important;margin-top:10px;list-style:none}
+  footer{background:#0A1E2B !important;color:#AAA !important;text-align:center;padding:20px;font-family:Arial,sans-serif;font-size:12px}
+  /* Carrito */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:30}
+  .overlay.show{display:block}
+  .drawer{position:fixed;top:0;right:0;width:100%;max-width:380px;height:100%;background:white !important;z-index:31;transform:translateX(100%);transition:.3s;display:flex;flex-direction:column;font-family:Arial,sans-serif}
+  .drawer.open{transform:translateX(0)}
+  .drawer-head{padding:18px;background:#0F2A3C;color:white;display:flex;justify-content:space-between;align-items:center}
+  .drawer-head button{background:white;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-weight:bold}
+  .drawer-body{flex:1;overflow:auto;padding:16px}
+  .item{display:flex;gap:10px;border-bottom:1px solid #eee;padding:12px 0;align-items:center}
+  .item img{width:60px;height:60px;object-fit:cover;border-radius:6px}
+  .item-info{flex:1}
+  .item-info b{font-size:14px;color:#1A1A1A}
+  .item-info p{font-size:13px;color:#666}
+  .qty{display:flex;align-items:center;gap:8px;margin-top:6px}
+  .qty button{width:26px;height:26px;border:1px solid #ddd;background:#f5f5f5;border-radius:4px;cursor:pointer;font-weight:bold}
+  .remove{color:#c00;background:none;border:none;cursor:pointer;font-size:12px}
+  .drawer-foot{padding:16px;border-top:1px solid #eee}
+  .total{font-size:18px;font-weight:bold;display:flex;justify-content:space-between;margin-bottom:12px;color:#1A1A1A}
+  .wa-btn{display:block;text-align:center;background:#25D366 !important;color:white !important;padding:14px;border-radius:8px;text-decoration:none;font-weight:bold}
+  .clear-btn{width:100%;margin-top:8px;background:none;border:none;color:#888;cursor:pointer;padding:8px}
+  .empty{text-align:center;color:#888;padding:30px 10px;line-height:1.6}
+  .name-input{width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin-bottom:10px;font-size:14px}
   @media(max-width:600px){.hero h1{font-size:30px}.info{grid-template-columns:1fr}header{flex-direction:column;gap:10px}}
 </style>
 </head>
@@ -46,16 +71,15 @@
   <b>LIBRERÍA <span>COMERCIAL</span></b>
   <nav>
     <a href="#libros">Libros</a>
-    <a href="#utiles">Útiles</a>
     <a href="#nosotros">Nosotros</a>
-    <a href="#" class="btn">Ver Catálogo</a>
+    <button class="cart-btn" onclick="toggleCart(true)">🛒 Pedido <span class="cart-count" id="cartCount">0</span></button>
   </nav>
 </header>
 
 <div class="hero">
   <p>DESDE 1998 • ASUNCIÓN, PARAGUAY</p>
   <h1>Todo para estudiar, trabajar y leer mejor.</h1>
-  <h2>Libros, útiles escolares, papelería y oficina. Calidad, buen precio y atención personalizada para familias, colegios y empresas.</h2>
+  <h2>Libros, útiles escolares, papelería y oficina. Agregá al pedido y envialo por WhatsApp.</h2>
   <a href="#libros">Ver Libros Destacados</a>
   <a href="#nosotros" class="outline">Visitar Local</a>
 </div>
@@ -64,25 +88,8 @@
 
 <div class="section" id="libros">
   <h3>Libros Destacados</h3>
-  <p class="sub">Selección de esta semana — los más vendidos de la librería.</p>
-  <div class="grid">
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600">
-      <div><small>EDUCACIÓN</small><h4>Matemática 1° - Secundaria</h4><p>Libro completo con ejercicios resueltos y práctica para exámenes.</p><div class="price">Gs. 85.000 <span>Gs. 105.000</span></div><button>Agregar al Pedido</button></div>
-    </div>
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600">
-      <div><small>LITERATURA</small><h4>El Principito</h4><p>Edición clásica de tapa dura. Ideal para regalo y lectura familiar.</p><div class="price">Gs. 65.000</div><button>Agregar al Pedido</button></div>
-    </div>
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600">
-      <div><small>ESCOLAR</small><h4>Cuaderno Universitario</h4><p>Cuaderno rayado de 100 hojas, tapa dura, colores clásicos.</p><div class="price">Gs. 28.000</div><button>Agregar al Pedido</button></div>
-    </div>
-    <div class="card">
-      <img src="https://images.unsplash.com/photo-1456735190827-d1262f71b8a3?w=600">
-      <div><small>OFICINA</small><h4>Kit Oficina Completo</h4><p>Bolígrafos, resaltadores, reglas, clips y notas adhesivas.</p><div class="price">Gs. 120.000 <span>Gs. 145.000</span></div><button>Agregar al Pedido</button></div>
-    </div>
-  </div>
+  <p class="sub">Tocá "Agregar al Pedido" y se suma a tu carrito.</p>
+  <div class="grid" id="products"></div>
 </div>
 
 <div class="section" id="utiles">
@@ -97,12 +104,89 @@
 
 <div class="section" id="nosotros">
   <div class="info">
-    <div><h3>Visitanos</h3><p>Te esperamos en nuestro local en el centro de Asunción. Atención personalizada de lunes a sábado.</p><ul><li>📍 Palma 123 c/ Chile, Asunción</li><li>🕒 Lun a Vie: 8:00 a 18:00</li><li>🕒 Sáb: 8:00 a 13:00</li><li>📞 (021) 444-555</li></ul></div>
-    <div><h3>Hacé tu pedido</h3><p>Escribinos por WhatsApp con tu lista y te preparamos todo con presupuesto sin compromiso.</p><p style="margin-top:16px;background:#C9A86A;color:#0F2A3C;padding:12px;border-radius:6px;text-align:center;font-weight:bold">WhatsApp: 0981 123 456</p></div>
+    <div><h3>Visitanos</h3><p>Te esperamos en nuestro local en el centro de Asunción.</p><ul><li>📍 Palma 123 c/ Chile, Asunción</li><li>🕒 Lun a Vie: 8:00 a 18:00</li><li>🕒 Sáb: 8:00 a 13:00</li><li>📞 0986 944 738</li></ul></div>
+    <div><h3>Hacé tu pedido</h3><p>Escribinos por WhatsApp con tu lista y te preparamos todo.</p><p style="margin-top:16px;background:#C9A86A;color:#0F2A3C;padding:12px;border-radius:6px;text-align:center;font-weight:bold">WhatsApp: 0986 944 738</p></div>
   </div>
 </div>
 
-<footer>© 2026 Librería Comercial - Asunción, Paraguay. Todos los derechos reservados.</footer>
+<footer>© 2026 Librería Comercial - Asunción, Paraguay.</footer>
 
+<div class="overlay" id="overlay" onclick="toggleCart(false)"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head"><b>Tu Pedido 🛒</b><button onclick="toggleCart(false)">X</button></div>
+  <div class="drawer-body" id="cartItems"></div>
+  <div class="drawer-foot" id="cartFoot" style="display:none">
+    <input class="name-input" id="clientName" placeholder="Tu nombre (ej: María Pérez)">
+    <input class="name-input" id="clientAddress" placeholder="Tu barrio / dirección para entrega (opcional)">
+    <div class="total"><span>Total:</span><span id="cartTotal">Gs. 0</span></div>
+    <a class="wa-btn" id="waLink" href="#" target="_blank">Enviar pedido por WhatsApp 📲</a>
+    <button class="clear-btn" onclick="clearCart()">Vaciar pedido</button>
+  </div>
+</div>
+
+<script>
+const WHATSAPP = "595986944738";
+const products = [
+  {id:1, cat:"EDUCACIÓN", name:"Matemática 1° - Secundaria", desc:"Libro completo con ejercicios resueltos y práctica.", price:85000, old:105000, img:"https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600"},
+  {id:2, cat:"LITERATURA", name:"El Principito", desc:"Edición clásica de tapa dura. Ideal para regalo.", price:65000, old:0, img:"https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600"},
+  {id:3, cat:"ESCOLAR", name:"Cuaderno Universitario", desc:"Cuaderno rayado de 100 hojas, tapa dura.", price:28000, old:0, img:"https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600"},
+  {id:4, cat:"OFICINA", name:"Kit Oficina Completo", desc:"Bolígrafos, resaltadores, reglas, clips y notas.", price:120000, old:145000, img:"https://images.unsplash.com/photo-1456735190827-d1262f71b8a3?w=600"},
+];
+let cart = JSON.parse(localStorage.getItem('libreria_cart') || '[]');
+function fmt(n){ return "Gs. " + n.toLocaleString('es-PY'); }
+function renderProducts(){
+  document.getElementById('products').innerHTML = products.map(p=>`
+    <div class="card">
+      <img src="${p.img}">
+      <div><small>${p.cat}</small><h4>${p.name}</h4><p>${p.desc}</p><div class="price">${fmt(p.price)} ${p.old?`<span>${fmt(p.old)}</span>`:''}</div><button class="add" onclick="addToCart(${p.id})">Agregar al Pedido</button></div>
+    </div>`).join('');
+}
+function save(){ localStorage.setItem('libreria_cart', JSON.stringify(cart)); }
+function addToCart(id){
+  let f = cart.find(i=>i.id===id);
+  if(f) f.qty++; else { let p = products.find(x=>x.id===id); cart.push({...p, qty:1}); }
+  save(); renderCart(); toggleCart(true);
+}
+function changeQty(id, d){
+  let f = cart.find(i=>i.id===id); if(!f) return;
+  f.qty += d; if(f.qty<=0) cart = cart.filter(i=>i.id!==id);
+  save(); renderCart();
+}
+function removeItem(id){ cart = cart.filter(i=>i.id!==id); save(); renderCart(); }
+function clearCart(){ cart=[]; save(); renderCart(); }
+function toggleCart(open){
+  document.getElementById('drawer').classList.toggle('open', open);
+  document.getElementById('overlay').classList.toggle('show', open);
+  if(open) renderCart();
+}
+function renderCart(){
+  let total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  let count = cart.reduce((s,i)=>s+i.qty,0);
+  document.getElementById('cartCount').textContent = count;
+  document.getElementById('cartTotal').textContent = fmt(total);
+  let box = document.getElementById('cartItems');
+  document.getElementById('cartFoot').style.display = cart.length ? 'block' : 'none';
+  if(!cart.length){ box.innerHTML = `<div class="empty">Tu pedido está vacío.<br>Agregá algún libro o útil y aparece acá.</div>`; return; }
+  box.innerHTML = cart.map(i=>`
+    <div class="item">
+      <img src="${i.img}">
+      <div class="item-info"><b>${i.name}</b><p>${fmt(i.price)} c/u</p>
+        <div class="qty"><button onclick="changeQty(${i.id},-1)">-</button><span>${i.qty}</span><button onclick="changeQty(${i.id},1)">+</button> <span style="margin-left:8px;font-weight:bold">${fmt(i.price*i.qty)}</span></div>
+      </div>
+      <button class="remove" onclick="removeItem(${i.id})">Borrar</button>
+    </div>`).join('');
+  let nombre = document.getElementById('clientName').value || '';
+  let dir = document.getElementById('clientAddress').value || '';
+  let msg = `Hola Librería Comercial! Quiero hacer un pedido:%0A%0A`;
+  cart.forEach(i=>{ msg += `• ${i.qty}x ${i.name} - ${fmt(i.price*i.qty)}%0A`; });
+  msg += `%0ATotal: ${fmt(total)}%0A`;
+  if(nombre) msg += `Nombre: ${encodeURIComponent(nombre)}%0A`;
+  if(dir) msg += `Entrega: ${encodeURIComponent(dir)}%0A`;
+  document.getElementById('waLink').href = `https://wa.me/${WHATSAPP}?text=${msg}`;
+}
+document.getElementById('clientName').addEventListener('input', renderCart);
+document.getElementById('clientAddress').addEventListener('input', renderCart);
+renderProducts(); renderCart();
+</script>
 </body>
 </html>

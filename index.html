@@ -1,9 +1,121 @@
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Prueba</title></head>
-<body style="background:#F5F0E6;font-family:Arial;text-align:center;padding:40px">
-<h1 style="background:#0F2A3C;color:white;padding:20px">LIBRERÍA COMERCIAL</h1>
-<h2>Si ves esto, YA ANDA ✅</h2>
-<p>Todo para estudiar, trabajar y leer mejor.</p>
-</body>
-</html>
+<div class="section" id="admin">
+<h3>🔐 Panel para vos - Agregar productos</h3>
+<p class="sub">Lo que guardás acá aparece arriba en la tienda y se guarda en Supabase.</p>
+<div class="admin-box">
+<input id="nombre" placeholder="Nombre ej: Cuaderno 100 hojas">
+<div class="admin-row">
+<select id="categoria"><option value="Cuadernos">Cuadernos</option><option value="Libros">Libros</option><option value="Utiles">Útiles</option><option value="Mochilas">Mochilas</option><option value="Papelería">Papelería</option><option value="Oficina">Oficina</option><option value="Otros">Otros</option></select>
+<input id="marca" placeholder="Marca ej: Norma">
+</div>
+<div class="admin-row">
+<input id="precio" type="number" placeholder="Precio Gs. ej: 15000">
+<input id="stock" type="number" placeholder="Stock ej: 20">
+</div>
+<input id="foto" placeholder="Link de foto (opcional)">
+<button onclick="guardar()">💾 Guardar producto</button>
+<button onclick="limpiar()" style="background:#111;margin-top:8px">Limpiar formulario</button>
+<div id="listaAdmin" style="margin-top:16px"></div>
+</div>
+</div>
+<footer>© 2026 Librería Comercial - Asunción, Paraguay.</footer>
+<div class="overlay" id="overlay" onclick="toggleCart(false)"></div>
+<div class="drawer" id="drawer">
+<div class="drawer-head"><b>Tu Pedido 🛒</b><button onclick="toggleCart(false)">X</button></div>
+<div class="drawer-body" id="cartItems"></div>
+<div class="drawer-foot" id="cartFoot" style="display:none">
+<input class="name-input" id="clientName" placeholder="Tu nombre (ej: María Pérez)">
+<input class="name-input" id="clientAddress" placeholder="Tu barrio / dirección (opcional)">
+<div class="total"><span>Total:</span><span id="cartTotal">Gs. 0</span></div>
+<a class="wa-btn" id="waLink" href="#" target="_blank">Enviar pedido por WhatsApp 📲</a>
+<button class="clear-btn" onclick="clearCart()">Vaciar pedido</button>
+</div>
+</div>
+<script>
+const WHATSAPP="595986944738";
+const SUPABASE_URL="https://ueflgspcvtpjxxbvpgut.supabase.co";
+const SUPABASE_KEY="sb_publishable_XBeI2DDlj6ar13TBgWktvw_ds3x0NWz";
+const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let products=[]; let cart=JSON.parse(localStorage.getItem('libreria_cart')||'[]'); let editId=null;
+function fmt(n){return "Gs. "+Number(n).toLocaleString('es-PY');}
+function fotoDe(p){if(p.foto) return p.foto; return "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600";}
+async function cargar(){
+const {data,error}=await supabaseClient.from('productos').select('*').order('creado_en',{ascending:false});
+if(error){document.getElementById('estado').innerText="Error: "+error.message; return;}
+products=data||[];
+document.getElementById('estado').innerText=products.length?products.length+" productos en tu tienda ✅":"Todavía no tenés productos. Agregá el primero abajo en el Panel.";
+renderProducts(); renderAdmin();
+}
+function renderProducts(){
+const q=(document.getElementById('buscador').value||'').toLowerCase();
+const list=products.filter(p=>p.nombre.toLowerCase().includes(q));
+if(!list.length){document.getElementById('products').innerHTML="<p style='font-family:Arial;color:#888'>No hay productos todavía. Agregá uno abajo en el Panel.</p>";return;}
+document.getElementById('products').innerHTML=list.map(p=>`<div class="card"><img src="${fotoDe(p)}" onerror="this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600'"><div><small>${(p.categoria||'').toUpperCase()} ${p.marca?'• '+p.marca:''}</small><h4>${p.nombre}</h4><p>Stock: ${p.stock} unidades</p><div class="price">${fmt(p.precio)}</div><button class="add" onclick="addToCart(${p.id})">Agregar al Pedido</button></div></div>`).join('');
+}
+function renderAdmin(){
+document.getElementById('listaAdmin').innerHTML=products.length?"<h4 style='margin-bottom:8px'>Tus productos guardados:</h4>"+products.map(p=>`<div class="admin-prod"><span><b>${p.nombre}</b> - ${fmt(p.precio)} - Stock ${p.stock}</span><span><button class="edit" onclick="editar(${p.id},'${p.nombre.replace(/'/g,"")}','${p.categoria}','${p.marca||''}',${p.precio},${p.stock})">Editar</button><button class="del" onclick="borrar(${p.id})">Borrar</button></span></div>`).join(''):"";
+}
+async function guardar(){
+const nombre=document.getElementById('nombre').value.trim();
+const categoria=document.getElementById('categoria').value;
+const marca=document.getElementById('marca').value.trim();
+const precio=Number(document.getElementById('precio').value);
+const stock=Number(document.getElementById('stock').value||0);
+if(!nombre||!precio){alert("Poné nombre y precio");return;}
+if(editId){
+const {error}=await supabaseClient.from('productos').update({nombre,categoria,marca,precio,stock}).eq('id',editId);
+if(error) return alert(error.message);
+alert("Actualizado ✅");
+}else{
+const {error}=await supabaseClient.from('productos').insert([{nombre,categoria,marca,precio,stock}]);
+if(error) return alert(error.message);
+alert("Guardado ✅ Ya aparece en tu tienda");
+}
+limpiar(); cargar();
+}
+function editar(id,nombre,categoria,marca,precio,stock){
+editId=id;
+document.getElementById('nombre').value=nombre;
+document.getElementById('categoria').value=categoria;
+document.getElementById('marca').value=marca;
+document.getElementById('precio').value=precio;
+document.getElementById('stock').value=stock;
+document.getElementById('admin').scrollIntoView({behavior:'smooth'});
+}
+async function borrar(id){
+if(!confirm("¿Borrar este producto?")) return;
+await supabaseClient.from('productos').delete().eq('id',id);
+cargar();
+}
+function limpiar(){editId=null;['nombre','marca','precio','stock','foto'].forEach(i=>document.getElementById(i).value='');}
+function save(){localStorage.setItem('libreria_cart',JSON.stringify(cart));}
+function addToCart(id){
+let f=cart.find(i=>i.id===id);
+if(f) f.qty++; else{let p=products.find(x=>x.id===id); cart.push({id:p.id,name:p.nombre,price:p.precio,img:fotoDe(p),qty:1});}
+save(); renderCart(); toggleCart(true);
+}
+function changeQty(id,d){
+let f=cart.find(i=>i.id===id); if(!f) return;
+f.qty+=d; if(f.qty<=0) cart=cart.filter(i=>i.id!==id);
+save(); renderCart();
+}
+function removeItem(id){cart=cart.filter(i=>i.id!==id); save(); renderCart();}
+function clearCart(){cart=[]; save(); renderCart();}
+function toggleCart(open){
+document.getElementById('drawer').classList.toggle('open',open);
+document.getElementById('overlay').classList.toggle('show',open);
+if(open) renderCart();
+}
+function renderCart(){
+let total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+let count=cart.reduce((s,i)=>s+i.qty,0);
+document.getElementById('cartCount').textContent=count;
+document.getElementById('cartTotal').textContent=fmt(total);
+let box=document.getElementById('cartItems');
+document.getElementById('cartFoot').style.display=cart.length?'block':'none';
+if(!cart.length){box.innerHTML=`<div class="empty">Tu pedido está vacío.<br>Agregá algún libro o útil y aparece acá.</div>`; return;}
+box.innerHTML=cart.map(i=>`<div class="item"><img src="${i.img}"><div class="item-info"><b>${i.name}</b><p>${fmt(i.price)} c/u</p><div class="qty"><button onclick="changeQty(${i.id},-1)">-</button><span>${i.qty}</span><button onclick="changeQty(${i.id},1)">+</button> <span style="margin-left:8px;font-weight:bold">${fmt(i.price*i.qty)}</span></div></div><button class="remove" onclick="removeItem(${i.id})">Borrar</button></div>`).join('');
+let nombre=document.getElementById('clientName').value||'';
+let dir=document.getElementById('clientAddress').value||'';
+let msg=`Hola Librería Comercial! Quiero hacer un pedido:%0A%0A`;
+cart.forEach(i=>{msg+=`• ${i.qty}x ${i.name} - ${fmt(i.price*i.qty)}%0A`;});
+msg+=`%0ATotal
